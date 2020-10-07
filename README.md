@@ -7,6 +7,14 @@ Shell commands are complex. Each executable has its own interface, and often mul
 You can think of oblivion as something that helps you define proper alias interfaces.
 
 ## Installation
+``` bash
+curl https://nim-lang.org/choosenim/init.sh -sSf | sh # install Nim
+git clone https://github.com/sealmove/oblivion.git
+cd oblivion
+nimble install
+```
+
+_Soon the project will be published to nimble's list, so you won't need to clone it manually._
 
 ## Usage
 All you need a file called `config.ini` in `$XDG_CONFIG_DIRS` (which by the way needs to be set) where you put your commands.  
