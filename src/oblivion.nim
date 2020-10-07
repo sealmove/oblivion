@@ -35,21 +35,37 @@ if not existsFile(cfgfile):
 # Parse config file
 let cfg = loadConfig(cfgfile)
 
-proc findMatch(group, arg: string): tuple[alias: string, cmd: string] =
+proc findGroup(arg: string): string =
+  var matches = newSeq[string]()
+  for g in cfg.keys:
+    if g.startsWith(arg):
+      matches.add(g)
+  case matches.len
+  of 0:
+    error("Group not found")
+  of 1:
+    result = matches[0]
+  else:
+    error("Ambiguous group; multiple matches:")
+    for m in matches:
+      echo "  " & colored(m, fgYellow)
+    quit QuitFailure
+
+proc findAlias(group, arg: string): tuple[alias, cmd: string] =
   var matches = initTable[string, string]()
   for alias, cmd in cfg[group]:
     if alias.startsWith(arg):
       matches.add(alias, cmd)
   case matches.len
   of 0:
-    error("Command not found")
+    error("Alias not found")
   of 1:
     for k, v in matches.pairs:
       result = (k, v)
   else:
-    error("Ambiguous command; multiple matches:")
+    error("Ambiguous alias; multiple matches:")
     for alias, cmds in matches.pairs:
-      echo " " & colored(alias, fgYellow)
+      echo "  " & colored(alias, fgYellow)
     quit QuitFailure
 
 proc printGroup(group: string) =
@@ -57,16 +73,17 @@ proc printGroup(group: string) =
   for alias, cmd in cfg[group]:
     echo fmt" {alias:<10}" & styled("| ", styleBright, fgYellow) & pretty(cmd)
 
-case paramCount()
-  of 0:
-    echo "Available groups:"
-    for g in cfg.keys:
-      echo " " & styled(g, styleBright, fgYellow)
-  of 1:
-    printGroup(paramStr(1))
-    quit QuitSuccess
-  else:
-    let (alias, cmd) = findMatch(paramStr(1), paramStr(2))
-    let ret = execShellCmd(cmd & " " & commandLineParams()[1..^1].join(" "))
-    if ret != 0:
-      quit QuitFailure
+if paramCount() == 0:
+  echo "Available groups:"
+  for g in cfg.keys:
+    echo "  " & styled(g, styleBright, fgYellow)
+  quit QuitFailure
+let g = findGroup(paramStr(1))
+if paramCount() == 1:
+  printGroup(g)
+  quit QuitSuccess
+let (alias, cmd) = findAlias(g, paramStr(2))
+echo "[+] " & pretty(cmd)
+let ret = execShellCmd(cmd & "  " & commandLineParams()[1..^1].join(" "))
+if ret != 0:
+  quit QuitFailure
