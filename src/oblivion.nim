@@ -59,6 +59,7 @@ proc findAlias(group, arg: string): tuple[alias, cmd: string] =
   case matches.len
   of 0:
     error("Alias not found")
+    quit QuitFailure
   of 1:
     for k, v in matches.pairs:
       result = (k, v)
@@ -90,7 +91,7 @@ if countParams(cmd) != paramCount() - 2:
   quit QuitFailure
 cmd = substitute(cmd)
 
-echo "[+] " & pretty(cmd)
+echo colored("= ", fgBlue) & pretty(cmd)
 let ret = execShellCmd(cmd)
 if ret != 0:
   quit QuitFailure
