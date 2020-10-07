@@ -1,5 +1,5 @@
 import os, terminal, tables, strformat, strutils, parsecfg, parseopt
-import oblivion/utils
+import oblivion/[utils, process]
 
 # Get XDG directory
 if not existsEnv("XDG_CONFIG_DIRS"):
@@ -82,8 +82,15 @@ let g = findGroup(paramStr(1))
 if paramCount() == 1:
   printGroup(g)
   quit QuitSuccess
-let (alias, cmd) = findAlias(g, paramStr(2))
+var (alias, cmd) = findAlias(g, paramStr(2))
+
+# Check if arguments match parameters
+if countParams(cmd) != paramCount() - 2:
+  error("Number of arguments don't match number of parameters of chosen command")
+  quit QuitFailure
+cmd = substitute(cmd)
+
 echo "[+] " & pretty(cmd)
-let ret = execShellCmd(cmd & "  " & commandLineParams()[1..^1].join(" "))
+let ret = execShellCmd(cmd)
 if ret != 0:
   quit QuitFailure
