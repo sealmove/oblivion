@@ -1,5 +1,5 @@
 # oblivion
-Shell command manager
+Shell alias manager
 
 ## Motivation
 Shell commands are complex. Each executable has its own interface, and often multiple of these are used in one command. At some point you reach out to a notebook/notepad for writing down this perfectly crafted pipeline with tons of options for each program. Later you find yourself reaching out to that memo too often, and still struggle to memorize it, so you end up making a shell alias for it. As this situation goes on, your shell starts getting cluttered and the aliases start conflicting with one another; so you decide to group commands by theme, functionality or whatever, and come up with a pseudo-namespaces for each group (i.e. prefix each alias related to package management with "pm").
@@ -9,12 +9,8 @@ You can think of oblivion as something that helps you define proper alias interf
 ## Installation
 ``` bash
 curl https://nim-lang.org/choosenim/init.sh -sSf | sh # install Nim
-git clone https://github.com/sealmove/oblivion.git
-cd oblivion
-nimble install
+nimble install oblivion
 ```
-
-_Soon the project will be published to nimble's list, so you won't need to clone it manually._
 
 ## Usage
 All you need a file called `config.ini` in `$XDG_CONFIG_DIRS` (which by the way needs to be set) where you put your commands.  
