@@ -11,12 +11,12 @@ let
   cfgdir = xdg / "oblivion"
   cfgfile = cfgdir / "config.ini"
 
-if not existsDir(xdg):
+if not dirExists(xdg):
   error("Env var 'XDG_CONFIG_DIRS' points to non-existent directory")
   quit QuitFailure
 
 # Find config file
-if not existsDir(cfgdir):
+if not dirExists(cfgdir):
   try:
     createDir(cfgdir)
     note(fmt"Created dir: {cfgdir}")
@@ -24,7 +24,7 @@ if not existsDir(cfgdir):
     error(fmt"Could not create dir: {cfgdir}")
     quit QuitFailure
 
-if not existsFile(cfgfile):
+if not fileExists(cfgfile):
   try: 
     writeFile(cfgfile, "")
     note(fmt"Created empty file: {cfgfile}")
@@ -56,7 +56,7 @@ proc findAlias(group, arg: string): tuple[alias, cmd: string] =
   var matches = initTable[string, string]()
   for alias, cmd in cfg[group]:
     if alias.startsWith(arg):
-      matches.add(alias, cmd)
+      matches[alias] = cmd
   case matches.len
   of 0:
     error("Alias not found")
